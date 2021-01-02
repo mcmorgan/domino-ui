@@ -1,36 +1,21 @@
 module Game exposing
     ( Game
-    , addChatMessage
-    , clearChatDraft
-    , closeChat
-    , composeChat
-    , decoder
-    , encodePlay
-    , errorToString
-    , executeEvent
-    , getChatDraft
-    , getId
-    , getTimesoutAt
-    , hasChat
-    , isResumable
-    , isSetCompleted
-    , isUpdating
-    , moveSelectedBack
-    , moveSelectedBy
-    , nextRoundStartedTimeout
-    , openChat
-    , roundNextEvent
-    , selectDomino
-    , setConnectionStatus
-    , setNextGame
-    , setViewport
-    , slug
-    , stageEvent
-    , switchToNextGame
-    , switchToNextRoundGame
-    , updateDecoder
-    , view
+    , addChatMessage, clearChatDraft, closeChat, composeChat, decoder, encodePlay, errorToString, executeEvent, getChatDraft, getId, getTimesoutAt, hasChat, isResumable, isSetCompleted, isUpdating, moveSelectedBack, moveSelectedBy, nextRoundStartedTimeout, openChat, roundNextEvent, selectDomino, setConnectionStatus, setNextGame, setViewport, slug, stageEvent, switchToNextGame, switchToNextRoundGame, updateDecoder, view
     )
+
+{-| This makes is possible to represent a domino game using elm
+
+
+# Definition
+
+@docs Game
+
+
+# Common Helpers
+
+@docs addChatMessage, clearChatDraft, closeChat, composeChat, decoder, encodePlay, errorToString, executeEvent, getChatDraft, getId, getTimesoutAt, hasChat, isResumable, isSetCompleted, isUpdating, moveSelectedBack, moveSelectedBy, nextRoundStartedTimeout, openChat, roundNextEvent, selectDomino, setConnectionStatus, setNextGame, setViewport, slug, stageEvent, switchToNextGame, switchToNextRoundGame, updateDecoder, view
+
+-}
 
 import Browser.Dom exposing (Viewport)
 import Chat exposing (Chat)
@@ -73,6 +58,8 @@ import UI.Button as Button
 import UI.Modal as Modal
 
 
+{-| Represents a Game
+-}
 type Game
     = Game Model
 
@@ -104,6 +91,11 @@ type Error
     = Board Board.Error
 
 
+{-| Move the selected domino by the delta provided
+
+    moveSelectedBy ( 3, 4 ) game == game
+
+-}
 moveSelectedBy : ( Float, Float ) -> Game -> Game
 moveSelectedBy delta ((Game ({ selected, players } as model)) as game) =
     let
@@ -115,6 +107,11 @@ moveSelectedBy delta ((Game ({ selected, players } as model)) as game) =
         |> Maybe.withDefault game
 
 
+{-| Push selected back in the hand
+
+    moveSelectedBack game == game
+
+-}
 moveSelectedBack : Game -> Game
 moveSelectedBack ((Game ({ selected, players } as model)) as game) =
     let
@@ -126,21 +123,41 @@ moveSelectedBack ((Game ({ selected, players } as model)) as game) =
         |> Maybe.withDefault game
 
 
+{-| Returns the game id
+
+    getId game == 3
+
+-}
 getId : Game -> GameId
 getId (Game { id }) =
     id
 
 
+{-| Returns the game slug useful for building a url
+
+    slug game == "3"
+
+-}
 slug : Game -> String
 slug game =
     game |> getId |> String.fromInt
 
 
+{-| Encode a play with the game ID
+
+    encodePlay play game == <encoded-play>
+
+-}
 encodePlay : Play -> Game -> Encode.Value
 encodePlay play (Game { id }) =
     play |> Play.encode id
 
 
+{-| Returns the next event for the current round
+
+    roundNextEvent game == Just event
+
+-}
 roundNextEvent : Game -> Maybe Event
 roundNextEvent (Game { nextGame, round, events }) =
     nextGame
@@ -154,6 +171,11 @@ roundNextEvent (Game { nextGame, round, events }) =
             )
 
 
+{-| Returns the timeout if a next round is just started
+
+    nextRoundStartedTimeout game == Just 25
+
+-}
 nextRoundStartedTimeout : Game -> Maybe Int
 nextRoundStartedTimeout (Game { round, nextGame, timeout }) =
     nextGame
@@ -167,11 +189,15 @@ nextRoundStartedTimeout (Game { round, nextGame, timeout }) =
             )
 
 
+{-| Switch to the next game
+-}
 switchToNextGame : Game -> Game
 switchToNextGame =
     switchToRoundNextGame False
 
 
+{-| Switch to the next round
+-}
 switchToNextRoundGame : Game -> Game
 switchToNextRoundGame =
     switchToRoundNextGame True
@@ -196,6 +222,8 @@ switchToRoundNextGame notSameRound ((Game { chat, round, nextGame }) as game) =
         |> Maybe.withDefault game
 
 
+{-| Stage the event
+-}
 stageEvent : Event -> Game -> Game
 stageEvent event (Game ({ players } as model)) =
     Game
@@ -205,6 +233,8 @@ stageEvent event (Game ({ players } as model)) =
         }
 
 
+{-| Execute the event staged
+-}
 executeEvent : Event -> Game -> Result Error Game
 executeEvent event (Game ({ players, board, events } as model)) =
     board
@@ -221,26 +251,37 @@ executeEvent event (Game ({ players, board, events } as model)) =
         |> Result.mapError Board
 
 
+{-| So we know if the game is currently updating.
+This is useful if we want to know if we can apply updates just received
+-}
 isUpdating : Game -> Bool
 isUpdating (Game { updating }) =
     updating
 
 
+{-| Can this game be resumed? Useful in situations where the game has been dormant and the first player opens the game
+-}
 isResumable : Game -> Bool
 isResumable (Game { resumable }) =
     resumable
 
 
+{-| Is this game set completed?
+-}
 isSetCompleted : Game -> Bool
 isSetCompleted (Game { state }) =
     state |> State.isSetCompleted
 
 
+{-| Returns the timeout for the current game
+-}
 getTimesoutAt : Game -> Maybe Int
 getTimesoutAt (Game { timesoutAt }) =
     timesoutAt
 
 
+{-| Select a domino for play
+-}
 selectDomino : Domino -> List End -> Game -> Result Error ( Game, NonEmptyList Highlighter )
 selectDomino domino ends (Game ({ me, players, board } as model)) =
     let
@@ -263,6 +304,8 @@ selectDomino domino ends (Game ({ me, players, board } as model)) =
         |> Result.mapError Board
 
 
+{-| Sets next game update usually as a result of a new game update receieved
+-}
 setNextGame : Game -> Game -> Game
 setNextGame theNextGame ((Game ({ nextGame } as m)) as game) =
     if theNextGame == game then
@@ -277,46 +320,64 @@ setNextGame theNextGame ((Game ({ nextGame } as m)) as game) =
                 Game { m | nextGame = Just theNextGame }
 
 
+{-| Opens the game chat
+-}
 openChat : Game -> Game
 openChat (Game ({ chat } as model)) =
     Game { model | chat = chat |> Maybe.map Chat.open }
 
 
+{-| close previously opened chat
+-}
 closeChat : Game -> Game
 closeChat (Game ({ chat } as model)) =
     Game { model | chat = chat |> Maybe.map Chat.close }
 
 
+{-| Does this game have chat feature?
+-}
 hasChat : Game -> Bool
 hasChat (Game { chat }) =
     chat /= Nothing
 
 
+{-| Updates the draft of the chat being composed
+-}
 composeChat : String -> Game -> Game
 composeChat draft (Game ({ chat } as model)) =
     Game { model | chat = chat |> Maybe.map (Chat.compose draft) }
 
 
+{-| Returns the current chat draft being typed
+-}
 getChatDraft : Game -> Maybe String
 getChatDraft (Game { chat }) =
     chat |> Maybe.andThen Chat.getDraft
 
 
+{-| clear the draft being composed usually as a result of a message being sent
+-}
 clearChatDraft : Game -> Game
 clearChatDraft (Game ({ chat } as model)) =
     Game { model | chat = chat |> Maybe.map Chat.clearDraft }
 
 
+{-| adds a new chat message to the player chat
+-}
 addChatMessage : Message -> Game -> Game
 addChatMessage chatMessage (Game ({ chat } as model)) =
     Game { model | chat = chat |> Maybe.map (Chat.addMessage chatMessage) }
 
 
+{-| Sets the connection status of the user so the user can be alerted
+-}
 setConnectionStatus : ConnectionStatus -> Game -> Game
 setConnectionStatus connectionStatus (Game m) =
     Game { m | connectionStatus = connectionStatus }
 
 
+{-| Sets the viewport based on browser changes
+-}
 setViewport : Maybe Viewport -> Game -> Game
 setViewport viewport ((Game ({ board } as m)) as game) =
     case viewport of
@@ -340,11 +401,18 @@ boardDimensions _ =
 -- DECODERS
 
 
+{-| Decodes an update of an existing game from one that was already decoded
+-}
 updateDecoder : Game -> Decoder Game
 updateDecoder (Game { me, viewport, connectionStatus }) =
     decoder me viewport connectionStatus
 
 
+{-| Decodes a game from JSON representation
+
+    decoder (Me "nexus") { width = 100, height = 200, ...} Online == <Decoder Game>
+
+-}
 decoder : Player Name -> Viewport -> ConnectionStatus -> Decoder Game
 decoder me viewport connectionStatus =
     succeed
@@ -393,6 +461,11 @@ playerDecoder me winner events =
 -- VIEW
 
 
+{-| Produced the HTML representation of the game
+
+    view game == "<game-html>"
+
+-}
 view : Game -> Html (Msg Domino)
 view ((Game { state, players, connectionStatus, board, chat }) as m) =
     div [ class "game game--full" ]
@@ -515,6 +588,8 @@ notOnlineWarningView (Game { players, state }) =
         text ""
 
 
+{-| Returns the string representation of the game error
+-}
 errorToString : Error -> String
 errorToString error =
     case error of
