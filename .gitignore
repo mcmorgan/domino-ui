@@ -1,2 +1,5 @@
 # elm-package generated files
 elm-stuff
+examples/node_modules
+examples/index.html
+examples/build

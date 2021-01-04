@@ -17,7 +17,13 @@ module Game.Hand exposing
     , view
     )
 
-import Game.Direction exposing (Direction)
+import Css
+    exposing
+        ( column
+        , displayFlex
+        , flexDirection
+        )
+import Game.Direction exposing (Direction(..))
 import Game.Domino as Domino exposing (Domino)
 import Game.Domino.Hidden as Hidden
 import Game.Domino.Play as Play exposing (Play)
@@ -28,7 +34,7 @@ import Game.Event as Event exposing (Event)
 import Game.Orientation exposing (Orientation(..))
 import Game.Player.State as State exposing (State)
 import Html.Styled exposing (Html, div)
-import Html.Styled.Attributes exposing (class)
+import Html.Styled.Attributes exposing (css)
 import Json.Decode as Decode exposing (Decoder)
 import Player exposing (Msg)
 
@@ -269,6 +275,20 @@ view (Hand { dominoes, direction }) =
 
                 Played _ ->
                     Hidden.create direction |> Hidden.view
+
+        directionStyles =
+            case direction of
+                North ->
+                    []
+
+                East ->
+                    [ flexDirection column ]
+
+                West ->
+                    [ flexDirection column ]
+
+                South ->
+                    []
     in
-    div [ class "dominoes" ] <|
+    div [ css ([ displayFlex ] ++ directionStyles) ] <|
         (dominoes |> List.map dominoView)
