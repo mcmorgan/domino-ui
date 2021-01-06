@@ -5,7 +5,7 @@ A domino ui, implemented natively in Elm.
 ## Installation
 
 ```shell
-elm install marcelmorgan/domino-ui
+elm install mcmorgan/domino-ui
 ```
 
 ## Usage

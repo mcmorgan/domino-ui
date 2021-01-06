@@ -1,6 +1,6 @@
 {
     "type": "package",
-    "name": "marcelmorgan/domino-ui",
+    "name": "mcmorgan/domino-ui",
     "summary": "Domino Game",
     "license": "BSD-3-Clause",
     "version": "1.0.0",

@@ -12,13 +12,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/marcelmorgan/domino-ui.git"
+    "url": "git+https://github.com/mcmorgan/domino-ui.git"
   },
   "bugs": {
-    "url": "https://github.com/marcelmorgan/domino-ui/issues"
+    "url": "https://github.com/mcmorgan/domino-ui/issues"
   },
-  "homepage": "https://github.com/marcelmorgan/domino-ui#readme",
-  "author": "marcelmorgan",
+  "homepage": "https://github.com/mcmorgan/domino-ui#readme",
+  "author": "mcmorgan",
   "license": "BSD-3-Clause",
   "devDependencies": {
     "elm": "^0.19.1-3",
