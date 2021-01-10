@@ -9,6 +9,7 @@ import Css
         , hex
         , inline
         , inlineBlock
+        , marginBottom
         , padding
         , px
         , rgb
@@ -153,6 +154,7 @@ view resultModel =
                     [ css
                         [ display inlineBlock
                         , backgroundColor (hex "55af6a")
+                        , marginBottom (px 5)
                         ]
                     ]
                     [ Board.view board ]
