@@ -1,7 +1,19 @@
 module Main exposing (main)
 
 import Browser
-import Css exposing (backgroundColor, hex, padding, px)
+import Css
+    exposing
+        ( backgroundColor
+        , border3
+        , display
+        , hex
+        , inline
+        , inlineBlock
+        , padding
+        , px
+        , rgb
+        , solid
+        )
 import Game.Board as Board exposing (Board)
 import Game.Direction as Direction
 import Game.Domino as Domino exposing (Domino)
@@ -134,6 +146,18 @@ buildPlays =
 
 view : Result String Model -> Html (Msg Domino)
 view resultModel =
+    let
+        boardView board =
+            div []
+                [ div
+                    [ css
+                        [ display inlineBlock
+                        , backgroundColor (hex "55af6a")
+                        ]
+                    ]
+                    [ Board.view board ]
+                ]
+    in
     case resultModel of
         Ok { sprites, hands, boards } ->
             div
@@ -150,7 +174,7 @@ view resultModel =
                     , h2 [] [ text "Hands" ]
                     , p [] <| List.map Hand.view hands
                     , h2 [] [ text "Boards" ]
-                    , p [] <| List.map Board.view boards
+                    , div [] <| List.map boardView boards
                     ]
                 ]
 
