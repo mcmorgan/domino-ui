@@ -56,7 +56,7 @@ pose : Dimensions -> Play -> Item
 pose dimensions play =
     let
         transform a =
-            round <| toFloat a / 2
+            (round <| toFloat a / 2) + 1
     in
     create
         { play =
@@ -163,13 +163,13 @@ fallsOffBoard { rows, columns } ((Item { direction }) as item) =
     in
     case direction of
         North ->
-            topLeft.row <= minimumFeeSpace
+            topLeft.row < minimumFeeSpace
 
         South ->
-            bottomRight.row >= (rows - minimumFeeSpace)
+            bottomRight.row > rows - minimumFeeSpace
 
         East ->
-            bottomRight.column > (columns - minimumFeeSpace)
+            bottomRight.column > columns - minimumFeeSpace
 
         West ->
             topLeft.column < minimumFeeSpace
