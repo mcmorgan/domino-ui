@@ -11,7 +11,6 @@ module Game.Board exposing
     , view
     )
 
-import Css exposing (auto, batch, margin, property)
 import Game.Board.Item as Item exposing (Item)
 import Game.Dimensions exposing (Dimensions)
 import Game.Direction exposing (Direction(..))
@@ -21,8 +20,7 @@ import Game.Domino.Play as Play exposing (Play)
 import Game.End exposing (End(..))
 import Game.Event as Event exposing (Event)
 import Game.Layout exposing (Layout(..))
-import Html.Styled exposing (Html, div)
-import Html.Styled.Attributes exposing (css)
+import Html.Styled exposing (Html)
 import NonEmptyList exposing (NonEmptyList)
 import Player exposing (Msg)
 
@@ -176,26 +174,11 @@ getEnd end ((Board ( state, _ )) as board) =
 
 view : Board -> Html (Msg Domino)
 view ((Board ( _, dimensions )) as board) =
-    div
-        [ css
-            [ margin auto
-            , batch
-                [ property "display" "grid"
-                , property "grid-template-columns" <|
-                    "repeat("
-                        ++ String.fromInt dimensions.columns
-                        ++ ", 1.6vmax)"
-                , property "grid-template-rows" <|
-                    "repeat("
-                        ++ String.fromInt dimensions.rows
-                        ++ ", 1.6vmax)"
-                , property "gap" "0.1vmax"
-                ]
-            ]
-        ]
-        ((board |> getHighlighters |> List.map Highlighter.view)
-            ++ (board |> getItems |> List.map (Item.view Play.view))
-        )
+    dimensions
+        |> Game.Dimensions.grid
+            ((board |> getHighlighters |> List.map Highlighter.view)
+                ++ (board |> getItems |> List.map (Item.view Play.view))
+            )
 
 
 errorToString : Error -> String
