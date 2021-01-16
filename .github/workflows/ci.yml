@@ -2,60 +2,22 @@ name: CI
 
 on: [push]
 
+defaults:
+  runs-on: ubuntu-latest
+
+  steps:
+  - uses: actions/checkout@v2
+    uses: actions/setup-node@v1
+    with:
+      node-version: '12'
+  - run: yarn install
+
 jobs:
   test:
-
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [12.x]
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: yarn install
     - run: yarn test
-      env:
-        CI: true
 
   lint:
-
-      runs-on: ubuntu-latest
-
-      strategy:
-        matrix:
-          node-version: [12.x]
-
-      steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
-      - run: yarn install
-      - run: yarn lint
-        env:
-          CI: true
+    - run: yarn lint
 
   analyse:
-
-      runs-on: ubuntu-latest
-
-      strategy:
-        matrix:
-          node-version: [12.x]
-
-      steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
-      - run: yarn install
-      - run: yarn analyse
-        env:
-          CI: true
+    - run: yarn analyse
