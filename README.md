@@ -1,6 +1,9 @@
+
 # domino-ui
 
 A domino ui, implemented natively in Elm.
+
+![CI](https://github.com/mcmorgan/domino-ui/workflows/CI/badge.svg)
 
 ## Installation
 

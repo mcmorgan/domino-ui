@@ -36,7 +36,7 @@ poseTest =
                         (Item.create
                             { play = nonDoublePlay
                             , direction = West
-                            , coordinates = { row = 50, column = 50 }
+                            , coordinates = { row = 51, column = 51 }
                             }
                         )
         , fuzz Fuzzer.suit "double" <|
@@ -51,7 +51,7 @@ poseTest =
                         (Item.create
                             { play = double |> Domino.setDirection South |> createPlay
                             , direction = West
-                            , coordinates = { row = 50, column = 50 }
+                            , coordinates = { row = 51, column = 51 }
                             }
                         )
         ]

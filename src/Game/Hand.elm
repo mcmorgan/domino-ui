@@ -290,5 +290,5 @@ view (Hand { dominoes, direction }) =
                 South ->
                     []
     in
-    div [ css ([ displayFlex ] ++ directionStyles) ] <|
+    div [ css (displayFlex :: directionStyles) ] <|
         (dominoes |> List.map dominoView)
