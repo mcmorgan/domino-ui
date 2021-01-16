@@ -4,16 +4,12 @@ import Browser
 import Css
     exposing
         ( backgroundColor
-        , border3
         , display
         , hex
-        , inline
         , inlineBlock
         , marginBottom
         , padding
         , px
-        , rgb
-        , solid
         )
 import Game.Board as Board exposing (Board)
 import Game.Direction as Direction
@@ -24,7 +20,7 @@ import Game.End exposing (End(..))
 import Game.Hand as Hand exposing (Hand)
 import Game.Orientation exposing (Orientation(..))
 import Game.Sprite as Sprite exposing (Sprite)
-import Html.Styled as Html exposing (Html, div, h1, h2, p, text, toUnstyled)
+import Html.Styled exposing (Html, div, h1, h2, p, text, toUnstyled)
 import Html.Styled.Attributes exposing (css)
 import Player exposing (Msg)
 
@@ -39,7 +35,7 @@ type alias Flags =
 
 
 init : Flags -> ( Result String Model, Cmd (Msg Domino) )
-init flags =
+init _ =
     let
         model =
             buildBoards
@@ -66,7 +62,7 @@ update msg model =
 
 
 subscriptions : Result String Model -> Sub msg
-subscriptions model =
+subscriptions _ =
     Sub.none
 
 
