@@ -14,7 +14,7 @@ jobs:
     - name: Use Node.js $node-version
       uses: actions/setup-node@v1
       with:
-        node-version: $node-version
+        node-version: ${{ node-version }}
     - run: yarn install
     - run: yarn test
 
@@ -26,7 +26,7 @@ jobs:
       - name: Use Node.js $node-version
         uses: actions/setup-node@v1
         with:
-          node-version: $node-version
+          node-version: ${{ node-version }}
       - run: yarn install
       - run: yarn lint
 
@@ -38,6 +38,6 @@ jobs:
       - name: Use Node.js $node-version
         uses: actions/setup-node@v1
         with:
-          node-version: $node-version
+          node-version: ${{ node-version }}
       - run: yarn install
       - run: yarn analyse
