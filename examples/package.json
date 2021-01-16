@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "Domino UI",
   "scripts": {
-    "build": "npm run cleanup && npm run copy-assets && elm make Main.elm --output=build/index.html --optimize",
+    "build": "yarn run cleanup && yarn run copy-assets && elm make Main.elm --output=build/index.html --optimize",
     "copy-assets": "rimraf build && mkdir build && cp -r example.css build/",
     "cleanup": "rimraf elm-stuff/",
     "debug": "elm-live Main.elm --port=3030 --dir=./ -- --output=index.html --debug",
-    "deploy": "npm run build && gh-pages --dist build/",
+    "deploy": "yarn run build && gh-pages --dist build/",
     "live": "elm-live Main.elm --port=3030 --dir=./ -- --output=index.html"
   },
   "repository": {

@@ -111,14 +111,14 @@ getEndTest =
                                         Item.create
                                             { play = pose
                                             , direction = West
-                                            , coordinates = { row = 5, column = 5 }
+                                            , coordinates = { row = 6, column = 6 }
                                             }
                                 , right =
                                     Just <|
                                         Item.create
                                             { play = pose |> Play.setEnd End.Right
                                             , direction = East
-                                            , coordinates = { row = 5, column = 5 }
+                                            , coordinates = { row = 6, column = 6 }
                                             }
                                 }
                         )
@@ -156,7 +156,7 @@ getEndTest =
                                                     (Domino.create Five Six |> Domino.setDirection South)
                                                     End.Left
                                             , direction = North
-                                            , coordinates = { row = 1, column = 5 }
+                                            , coordinates = { row = 2, column = 6 }
                                             }
                                 , right =
                                     Just <|
@@ -167,7 +167,7 @@ getEndTest =
                                                     (Domino.create Deuce Four |> Domino.setDirection West)
                                                     End.Right
                                             , direction = West
-                                            , coordinates = { row = 10, column = 2 }
+                                            , coordinates = { row = 11, column = 3 }
                                             }
                                 }
                         )
