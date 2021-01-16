@@ -3,7 +3,8 @@ name: CD
 on:
   push:
     branches:
-      - '!main'
+      - add-cd
+      - main
 
 env:
   NODE_VERSION: '12'
