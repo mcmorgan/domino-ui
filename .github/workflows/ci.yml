@@ -14,10 +14,13 @@ defaults:
 
 jobs:
   test:
+    steps:
     - run: yarn test
 
   lint:
+    steps:
     - run: yarn lint
 
   analyse:
+    steps:
     - run: yarn analyse
