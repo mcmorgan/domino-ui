@@ -7,7 +7,7 @@
     "copy-assets": "rimraf build && mkdir build && cp -r example.css build/",
     "cleanup": "rimraf elm-stuff/",
     "debug": "elm-live Main.elm --port=3030 --dir=./ -- --output=index.html --debug",
-    "deploy": "npm run build && gh-pages --dist build/",
+    "deploy": "yarn run build && gh-pages --dist build/",
     "live": "elm-live Main.elm --port=3030 --dir=./ -- --output=index.html"
   },
   "repository": {
