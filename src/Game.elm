@@ -1,6 +1,7 @@
 module Game exposing
     ( Game
-    , addChatMessage, clearChatDraft, closeChat, composeChat, decoder, encodePlay, errorToString, executeEvent, getChatDraft, getId, getTimesoutAt, hasChat, isResumable, isSetCompleted, isUpdating, moveSelectedBack, moveSelectedBy, nextRoundStartedTimeout, openChat, roundNextEvent, selectDomino, setConnectionStatus, setNextGame, setViewport, slug, stageEvent, switchToNextGame, switchToNextRoundGame, updateDecoder, view
+    , addChatMessage, clearChatDraft, closeChat, composeChat, decoder, errorToString, executeEvent, getChatDraft, getId, getTimesoutAt, hasChat, isResumable, isSetCompleted, isUpdating, moveSelectedBack, moveSelectedBy, nextRoundStartedTimeout, openChat, roundNextEvent, selectDomino, setConnectionStatus, setNextGame, setViewport, slug, stageEvent, switchToNextGame, switchToNextRoundGame, updateDecoder, view
+    , create, view2
     )
 
 {-| This makes is possible to represent a domino game using elm
@@ -13,27 +14,27 @@ module Game exposing
 
 # Common Helpers
 
-@docs addChatMessage, clearChatDraft, closeChat, composeChat, decoder, encodePlay, errorToString, executeEvent, getChatDraft, getId, getTimesoutAt, hasChat, isResumable, isSetCompleted, isUpdating, moveSelectedBack, moveSelectedBy, nextRoundStartedTimeout, openChat, roundNextEvent, selectDomino, setConnectionStatus, setNextGame, setViewport, slug, stageEvent, switchToNextGame, switchToNextRoundGame, updateDecoder, view
+@docs addChatMessage, clearChatDraft, closeChat, composeChat, decoder, errorToString, executeEvent, getChatDraft, getId, getTimesoutAt, hasChat, isResumable, isSetCompleted, isUpdating, moveSelectedBack, moveSelectedBy, nextRoundStartedTimeout, openChat, roundNextEvent, selectDomino, setConnectionStatus, setNextGame, setViewport, slug, stageEvent, switchToNextGame, switchToNextRoundGame, updateDecoder, view
 
 -}
 
-import Browser.Dom exposing (Viewport)
 import Chat exposing (Chat)
 import ConnectionStatus exposing (ConnectionStatus)
+import Css exposing (auto, backgroundColor, batch, hex, margin, property)
 import Game.Board as Board exposing (Board)
 import Game.Dimensions exposing (Dimensions)
 import Game.Direction exposing (Direction(..))
 import Game.Domino exposing (Domino)
 import Game.Domino.Highlighter exposing (Highlighter)
-import Game.Domino.Play as Play exposing (Play)
+import Game.Domino.Play as Play
 import Game.End exposing (End(..))
 import Game.Event as Event exposing (Event)
-import Game.Id exposing (GameId)
+import Game.Id
 import Game.Player as GamePlayer exposing (GamePlayer, decoder)
 import Game.Player.Message exposing (Message)
 import Game.Player.Presence exposing (Presence(..))
 import Game.State as State exposing (State)
-import Game.Type as Type exposing (GameType)
+import Game.Type as Type exposing (GameType(..))
 import Html.Styled exposing (Html, div, text)
 import Html.Styled.Attributes exposing (class)
 import Json.Decode as Decode
@@ -50,10 +51,10 @@ import Json.Decode as Decode
         , succeed
         )
 import Json.Decode.Pipeline exposing (custom, hardcoded, optional, required)
-import Json.Encode as Encode
 import NonEmptyList exposing (NonEmptyList)
 import Player as Player exposing (Msg, Name, Player)
 import Score exposing (decoder)
+import Svg.Styled.Attributes exposing (css)
 import UI.Button as Button
 import UI.Modal as Modal
 
@@ -69,7 +70,7 @@ type alias Model =
     , me : Player Name
     , viewport : Viewport
     , connectionStatus : ConnectionStatus
-    , id : GameId
+    , id : Game.Id.Id
     , chat : Maybe Chat
     , timeout : Maybe Int
     , timesoutAt : Maybe Int
@@ -85,6 +86,37 @@ type alias Model =
     , nextGame : Maybe Game
     , selected : Maybe Domino
     }
+
+
+type alias Viewport =
+    { width : Float
+    , height : Float
+    }
+
+
+create : Game.Id.Id -> Viewport -> Game
+create gameId viewport =
+    Game
+        { updating = False
+        , me = Player.guest
+        , viewport = viewport
+        , connectionStatus = ConnectionStatus.unknown
+        , id = gameId
+        , chat = Nothing
+        , timeout = Nothing
+        , timesoutAt = Nothing
+        , winner = Nothing
+        , events = []
+        , state = State.active
+        , players = []
+        , resumable = False
+        , board = Board.empty { rows = 5, columns = 5 }
+        , round = 0
+        , type_ = CutThroat
+        , message = Nothing
+        , nextGame = Nothing
+        , selected = Nothing
+        }
 
 
 type Error
@@ -128,7 +160,7 @@ moveSelectedBack ((Game ({ selected, players } as model)) as game) =
     getId game == 3
 
 -}
-getId : Game -> GameId
+getId : Game -> Game.Id.Id
 getId (Game { id }) =
     id
 
@@ -139,18 +171,8 @@ getId (Game { id }) =
 
 -}
 slug : Game -> String
-slug game =
-    game |> getId |> String.fromInt
-
-
-{-| Encode a play with the game ID
-
-    encodePlay play game == <encoded-play>
-
--}
-encodePlay : Play -> Game -> Encode.Value
-encodePlay play (Game { id }) =
-    play |> Play.encode id
+slug =
+    getId
 
 
 {-| Returns the next event for the current round
@@ -420,7 +442,7 @@ decoder me viewport connectionStatus =
             case events |> (List.filterMap Event.getPlay >> Board.create (viewport |> boardDimensions)) of
                 Ok board ->
                     succeed (Model False me viewport connectionStatus)
-                        |> required "id" int
+                        |> required "id" string
                         |> custom (Chat.decoder me)
                         |> optional "timeout_in_seconds" (nullable int) Nothing
                         |> optional "timesout_at" (nullable int) Nothing
@@ -485,6 +507,53 @@ view ((Game { state, players, connectionStatus, board, chat }) as m) =
         )
 
 
+view2 : Game -> Html (Msg Domino)
+view2 _ =
+    div
+        [ css
+            [ margin auto
+            , backgroundColor (hex "55af6a")
+            , batch
+                [ property "display" "grid"
+                , property "grid-template-columns" <|
+                    "repeat("
+                        ++ String.fromInt 40
+                        ++ ", 1.6vmax)"
+                , property "grid-template-rows" <|
+                    "repeat("
+                        ++ String.fromInt 40
+                        ++ ", 1.6vmax)"
+                , property "gap" "0.1vmax"
+                ]
+            ]
+        ]
+        [ text "blah" ]
+
+
+
+-- div [] [ "Game2" |> text, board |> Board.view ]
+-- grid : List (Html (Msg a)) -> Dimensions -> Html (Msg a)
+-- grid elements dimensions =
+--     div
+--         [ css
+--             [ margin auto
+--             , batch
+--                 [ property "display" "grid"
+--                 , property "grid-template-columns" <|
+--                     "repeat("
+--                         ++ String.fromInt dimensions.columns
+--                         ++ ", 1.6vmax)"
+--                 , property "grid-template-rows" <|
+--                     "repeat("
+--                         ++ String.fromInt dimensions.rows
+--                         ++ ", 1.6vmax)"
+--                 , property "gap" "0.1vmax"
+--                 ]
+--             ]
+--         ]
+--         elements
+
+
 closeButtonView : Html (Msg Domino)
 closeButtonView =
     Button.danger
@@ -496,44 +565,39 @@ closeButtonView =
 
 nextActionView : Game -> Html (Msg Domino)
 nextActionView (Game { state, timeout, players }) =
-    case state of
-        State.Active ->
-            if timeout /= Nothing && presenceForMe players == Online then
-                Button.danger
-                    { action = Player.GoesAway
-                    , label = "BRB"
-                    }
-                    |> Button.view
-
-            else
-                text ""
-
-        State.Drawn ->
-            Button.primary
-                { action = Player.SwitchedToNextGame
-                , label = "Next game"
+    if State.isActive state then
+        if timeout /= Nothing && presenceForMe players == Online then
+            Button.danger
+                { action = Player.GoesAway
+                , label = "BRB"
                 }
                 |> Button.view
 
-        State.Completed _ _ ->
-            Button.primary
-                { action = Player.SwitchedToNextGame
-                , label = "Next game"
-                }
-                |> Button.view
+        else
+            text ""
 
-        State.SetCompleted _ _ ->
-            Button.cta
-                { action = Player.ClosedGame
-                , label =
-                    case players |> List.filter GamePlayer.isMe |> List.head of
-                        Nothing ->
-                            "Watch next"
+    else if State.isCompleted state then
+        Button.primary
+            { action = Player.SwitchedToNextGame
+            , label = "Next game"
+            }
+            |> Button.view
 
-                        Just _ ->
-                            "Play again"
-                }
-                |> Button.view
+    else if State.isSetCompleted state then
+        Button.cta
+            { action = Player.ClosedGame
+            , label =
+                case players |> List.filter GamePlayer.isMe |> List.head of
+                    Nothing ->
+                        "Watch next"
+
+                    Just _ ->
+                        "Play again"
+            }
+            |> Button.view
+
+    else
+        text ""
 
 
 presenceForMe : List GamePlayer -> Presence

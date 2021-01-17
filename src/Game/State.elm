@@ -1,5 +1,6 @@
 module Game.State exposing
-    ( State(..)
+    ( State
+    , active
     , decoder
     , isActive
     , isCompleted
@@ -23,6 +24,11 @@ type State
     | Drawn
     | Completed Win (Player Name)
     | SetCompleted Win (Player Name)
+
+
+active : State
+active =
+    Active
 
 
 isActive : State -> Bool

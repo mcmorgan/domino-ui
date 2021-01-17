@@ -11,6 +11,7 @@ import Css
         , padding
         , px
         )
+import Game exposing (Game)
 import Game.Board as Board exposing (Board)
 import Game.Direction as Direction
 import Game.Domino as Domino exposing (Domino)
@@ -44,6 +45,7 @@ init _ =
                         { sprites = buildSprites
                         , boards = boards
                         , hands = buildHands
+                        , games = buildGames
                         }
                     )
     in
@@ -70,6 +72,7 @@ type alias Model =
     { sprites : List Sprite
     , boards : List Board
     , hands : List Hand
+    , games : List Game
     }
 
 
@@ -103,6 +106,11 @@ buildHands =
         |> Hand.addUnexposed
         |> Hand.addUnexposed
     ]
+
+
+buildGames : List Game
+buildGames =
+    [ Game.create "test" { width = 400, height = 400 } ]
 
 
 buildSprites : List Sprite
@@ -157,7 +165,7 @@ view resultModel =
                 ]
     in
     case resultModel of
-        Ok { sprites, hands, boards } ->
+        Ok { sprites, hands, boards, games } ->
             div
                 [ css
                     [ backgroundColor (hex "e9efe9")
@@ -167,7 +175,9 @@ view resultModel =
                 [ h1 [] [ text "Demo" ]
                 , p
                     []
-                    [ h2 [] [ text "Sprites" ]
+                    [ h2 [] [ text "Games" ]
+                    , div [] <| List.map Game.view2 games
+                    , h2 [] [ text "Sprites" ]
                     , p [] <| List.map Sprite.view sprites
                     , h2 [] [ text "Hands" ]
                     , p [] <| List.map Hand.view hands

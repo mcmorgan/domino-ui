@@ -1,5 +1,5 @@
 module Game.Id exposing
-    ( GameId
+    ( Id
     , decoder
     , encode
     , toString
@@ -9,20 +9,20 @@ import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode
 
 
-type alias GameId =
-    Int
+type alias Id =
+    String
 
 
-decoder : Decoder GameId
+decoder : Decoder Id
 decoder =
-    Decode.int
+    Decode.string
 
 
-encode : GameId -> Encode.Value
-encode id =
-    Encode.int id
+encode : Id -> Encode.Value
+encode =
+    Encode.string
 
 
-toString : GameId -> String
-toString =
-    String.fromInt
+toString : Id -> String
+toString id =
+    id

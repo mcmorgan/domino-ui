@@ -2,7 +2,10 @@ module Game.Board exposing
     ( Board
     , Error(..)
     , addPlay
-    , create
+    ,  create
+       -- we can change this to do what empty does now
+
+    , empty
     , errorToString
     , executeEvent
     , getEnd
@@ -11,6 +14,7 @@ module Game.Board exposing
     , view
     )
 
+import Css exposing (auto, batch, margin, property)
 import Game.Board.Item as Item exposing (Item)
 import Game.Dimensions exposing (Dimensions)
 import Game.Direction exposing (Direction(..))
@@ -20,7 +24,8 @@ import Game.Domino.Play as Play exposing (Play)
 import Game.End exposing (End(..))
 import Game.Event as Event exposing (Event)
 import Game.Layout exposing (Layout(..))
-import Html.Styled exposing (Html)
+import Html.Styled exposing (Html, div)
+import Html.Styled.Attributes exposing (css)
 import NonEmptyList exposing (NonEmptyList)
 import Player exposing (Msg)
 
@@ -65,11 +70,16 @@ getItems (Board ( state, _ )) =
             items |> NonEmptyList.toList
 
 
+empty : Dimensions -> Board
+empty dimensions =
+    Board ( Empty Nothing, dimensions )
+
+
 create : Dimensions -> List Play -> Result Error Board
 create dimensions =
     List.foldl
         (Result.andThen << addPlay)
-        (Board ( Empty Nothing, dimensions ) |> Ok)
+        (empty dimensions |> Ok)
 
 
 addPlay : Play -> Board -> Result Error Board
@@ -175,10 +185,32 @@ getEnd end ((Board ( state, _ )) as board) =
 view : Board -> Html (Msg Domino)
 view ((Board ( _, dimensions )) as board) =
     dimensions
-        |> Game.Dimensions.grid
+        |> grid
             ((board |> getHighlighters |> List.map Highlighter.view)
                 ++ (board |> getItems |> List.map (Item.view Play.view))
             )
+
+
+grid : List (Html (Msg a)) -> Dimensions -> Html (Msg a)
+grid elements dimensions =
+    div
+        [ css
+            [ margin auto
+            , batch
+                [ property "display" "grid"
+                , property "grid-template-columns" <|
+                    "repeat("
+                        ++ String.fromInt dimensions.columns
+                        ++ ", 1.6vmax)"
+                , property "grid-template-rows" <|
+                    "repeat("
+                        ++ String.fromInt dimensions.rows
+                        ++ ", 1.6vmax)"
+                , property "gap" "0.1vmax"
+                ]
+            ]
+        ]
+        elements
 
 
 errorToString : Error -> String
