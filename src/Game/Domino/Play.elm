@@ -26,7 +26,7 @@ import Game.Direction as Direction exposing (Direction(..))
 import Game.Domino as Domino exposing (Domino)
 import Game.Domino.Suit as Suit exposing (Suit(..))
 import Game.End as End exposing (End(..))
-import Game.Id as GameId exposing (GameId)
+import Game.Id
 import Html.Styled exposing (Html)
 import Json.Decode exposing (Decoder, andThen, field, map, map2, oneOf, string, succeed)
 import Json.Encode as Encode
@@ -128,10 +128,10 @@ decoder playerName =
         )
 
 
-encode : GameId -> Play -> Encode.Value
+encode : Game.Id.Id -> Play -> Encode.Value
 encode gameId (Play ( playerName, domino, end )) =
     Encode.object
-        [ ( "gameId", GameId.encode gameId )
+        [ ( "gameId", Game.Id.encode gameId )
         , ( "domino", domino |> Domino.encode )
         , ( "playerName", playerName |> Player.encode )
         , ( "direction", end |> End.encode )

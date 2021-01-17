@@ -2,7 +2,10 @@ module Game.Board exposing
     ( Board
     , Error(..)
     , addPlay
-    , create
+    ,  create
+       -- we can change this to do what empty does now
+
+    , empty
     , errorToString
     , executeEvent
     , getEnd
@@ -67,11 +70,16 @@ getItems (Board ( state, _ )) =
             items |> NonEmptyList.toList
 
 
+empty : Dimensions -> Board
+empty dimensions =
+    Board ( Empty Nothing, dimensions )
+
+
 create : Dimensions -> List Play -> Result Error Board
 create dimensions =
     List.foldl
         (Result.andThen << addPlay)
-        (Board ( Empty Nothing, dimensions ) |> Ok)
+        (empty dimensions |> Ok)
 
 
 addPlay : Play -> Board -> Result Error Board
@@ -176,6 +184,15 @@ getEnd end ((Board ( state, _ )) as board) =
 
 view : Board -> Html (Msg Domino)
 view ((Board ( _, dimensions )) as board) =
+    dimensions
+        |> grid
+            ((board |> getHighlighters |> List.map Highlighter.view)
+                ++ (board |> getItems |> List.map (Item.view Play.view))
+            )
+
+
+grid : List (Html (Msg a)) -> Dimensions -> Html (Msg a)
+grid elements dimensions =
     div
         [ css
             [ margin auto
@@ -193,9 +210,7 @@ view ((Board ( _, dimensions )) as board) =
                 ]
             ]
         ]
-        ((board |> getHighlighters |> List.map Highlighter.view)
-            ++ (board |> getItems |> List.map (Item.view Play.view))
-        )
+        elements
 
 
 errorToString : Error -> String

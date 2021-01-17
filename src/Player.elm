@@ -17,7 +17,6 @@ module Player exposing
 
 import Draggable
 import Game.End exposing (End(..))
-import Game.Id exposing (GameId)
 import Game.Player.Presence as Presence exposing (Presence)
 import Game.Type exposing (GameType)
 import Html.Styled exposing (Html, div, text)
@@ -47,7 +46,7 @@ type Msg domino
     | GoesAway
     | ClosedGame
     | SwitchedToNextGame
-    | OpenedGame GameId
+    | OpenedGame String
     | JoinedGame GameType
     | LeftGame GameType
     | PlayedPractice GameType
